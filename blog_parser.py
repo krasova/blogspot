@@ -2,8 +2,9 @@ from bs4 import BeautifulSoup as Soup
 
 
 def parse_blog(file):
-    handler = open(file, encoding='utf8').read()
-    soup = Soup(handler, 'html5lib')
+    blog_text = open(file, encoding='utf8').read()
+    clean_blog_post = blog_text.replace('&lt;', '<').replace('&gt;', '>')
+    soup = Soup(clean_blog_post, 'html5lib')
     blog = []
     for entry in soup.findAll('entry'):
         entry_content = entry.find('content')
