@@ -51,8 +51,8 @@ def fast_ai_nlp_svd(content):
     print(vocab[8000:8020])
 
     U, s, Vh = linalg.svd(vectors, full_matrices=False)
-    plt.plot(s[20:40])
-    plt.show()
+    # plt.plot(s[20:40])
+    # plt.show()
     print(U.shape, s.shape, Vh.shape)
     print(show_topics(Vh[:10], vocab))
 
@@ -84,7 +84,11 @@ def fast_ai_nlp_nmf(content):
     W1 = clf.fit_transform(vectors)
     H1 = clf.components_
     print(show_topics(H1, vocab))
-
+    vectorizer_tfidf = TfidfVectorizer(stop_words=stop_words)
+    vectors_tfidf = vectorizer_tfidf.fit_transform(content)  # (documents, vocab)
+    W1 = clf.fit_transform(vectors_tfidf)
+    H1 = clf.components_
+    print(show_topics(H1, vocab))
 
 if __name__ == "__main__":
     all_content = parse_blog('blog-07-14-2019.xml')
