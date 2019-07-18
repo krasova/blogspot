@@ -5,6 +5,10 @@ import numpy as np
 from scipy import linalg
 from nltk.corpus import stopwords
 import matplotlib.pyplot as plt
+from sklearn import decomposition
+# from nltk import stem
+# from nltk import word_tokenize
+
 
 def parse_blog(file):
     blog_text = open(file, encoding='utf8').read()
@@ -31,19 +35,10 @@ def parse_blog(file):
             }
             all_content.append(entry_text)
             blog.append(blog_post)
-
-    # print(blog[67].get('title'))
-    # print(blog[67].get('content'))
-    # print(blog[67].get('tags'))
-    # print(len(blog))
-    #
-    # print("\n".join(allContent[:3]))
-
     return all_content
 
 
 def fast_ai_nlp_svd(content):
-
     nltk.download('stopwords')
     stop_words = stopwords.words('russian')
     print(stop_words[45:60])
@@ -69,6 +64,29 @@ def show_topics(a, vocabulary):
     return [' '.join(t) for t in topic_words]
 
 
+def fast_ai_nlp_nmf(content):
+    nltk.download('stopwords')
+    stop_words = stopwords.words('russian')
+
+    # class LemmaTokenizer(object):
+    #     def __init__(self):
+    #         self.wnl = stem.WordNetLemmatizer()
+    #
+    #     def __call__(self, doc):
+    #         return [self.wnl.lemmatize(word) for word in word_tokenize(doc)]
+
+    vectorizer = CountVectorizer(stop_words=stop_words) #, tokenizer=LemmaTokenizer())
+    vectors = vectorizer.fit_transform(content).todense()  # (documents, vocab)
+    vocab = np.array(vectorizer.get_feature_names())
+    m, n = vectors.shape
+    d = 5  # num topics
+    clf = decomposition.NMF(n_components=d, random_state=1)
+    W1 = clf.fit_transform(vectors)
+    H1 = clf.components_
+    print(show_topics(H1, vocab))
+
+
 if __name__ == "__main__":
     all_content = parse_blog('blog-07-14-2019.xml')
     fast_ai_nlp_svd(all_content)
+    fast_ai_nlp_nmf(all_content)
